@@ -1,0 +1,154 @@
+:root{
+  --bg:#0b0d10;
+  --bg2:#15191f;
+  --panel:#181d24;
+  --panel2:#20262f;
+  --text:#f4f6f8;
+  --muted:#aab2bd;
+  --accent:#ff5a1f;
+  --accent2:#ff8a3d;
+  --line:#303844;
+  --success:#28c76f;
+  --danger:#ff4d5e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  position:relative;
+  min-height:100vh;
+  color:var(--text)!important;
+  background:
+    linear-gradient(115deg,rgba(5,7,10,.95) 0%,rgba(8,11,15,.90) 42%,rgba(14,17,22,.86) 100%),
+    url('../images/cars/audir8.jpg') center/cover fixed no-repeat!important;
+  background-attachment:fixed!important;
+}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(circle at 14% 18%,rgba(255,90,31,.18),transparent 24%),
+    radial-gradient(circle at 86% 78%,rgba(0,255,204,.09),transparent 22%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 36px);
+  opacity:.9;
+}
+body::after{
+  content:'';
+  position:fixed;
+  left:-120px;
+  bottom:-160px;
+  width:520px;
+  height:520px;
+  border:1px solid rgba(255,90,31,.16);
+  border-radius:50%;
+  box-shadow:0 0 0 55px rgba(255,90,31,.025),0 0 0 110px rgba(255,90,31,.018);
+  pointer-events:none;
+  z-index:0;
+}
+body > *{position:relative;z-index:1;}
+.navbar,.topbar,.sidebar,.box,.container-box,.login-box,.register-box,.profile-box,.card,.welcome,.header,.form-container,.invoice-box,.booking-box,.content-box,.panel{
+  backdrop-filter:none!important;
+}
+.navbar,.topbar{
+  background:#11151a!important;
+  border-bottom:1px solid var(--line)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)!important;
+}
+.sidebar{
+  background:#11151a!important;
+  border-right:1px solid var(--line)!important;
+  box-shadow:8px 0 28px rgba(0,0,0,.28)!important;
+}
+.logo,.navbar .logo,.sidebar .logo,h1 span,.header span{
+  color:var(--accent)!important;
+  text-shadow:none!important;
+}
+a{transition:.2s ease}
+.navbar a:hover,.sidebar a:hover,.nav-links a:hover{
+  color:var(--accent)!important;
+  text-shadow:none!important;
+}
+.sidebar a:hover{
+  background:var(--accent)!important;
+  color:#fff!important;
+  transform:translateX(6px)!important;
+}
+button,.btn,input[type="submit"],.book-btn,.action-btn,.primary-btn{
+  background:linear-gradient(135deg,var(--accent),var(--accent2))!important;
+  color:#fff!important;
+  border:none!important;
+  box-shadow:0 8px 22px rgba(255,90,31,.22)!important;
+}
+button:hover,.btn:hover,input[type="submit"]:hover,.book-btn:hover,.action-btn:hover,.primary-btn:hover{
+  filter:brightness(1.06)!important;
+  transform:translateY(-2px)!important;
+}
+input,select,textarea{
+  background:#0f1318!important;
+  color:var(--text)!important;
+  border:1px solid #343d49!important;
+  box-shadow:none!important;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 0 3px rgba(255,90,31,.12)!important;
+  outline:none!important;
+}
+input::placeholder,textarea::placeholder{color:#7f8996!important}
+.card,.box,.profile-box,.welcome,.header,.form-container,.invoice-box,.booking-box,.content-box,.stat-card,.vehicle-card,.table-container{
+  background:linear-gradient(145deg,#171c22,#12161b)!important;
+  border:1px solid var(--line)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.26)!important;
+}
+.card:hover,.vehicle-card:hover{
+  transform:translateY(-6px)!important;
+  border-color:rgba(255,90,31,.65)!important;
+  box-shadow:0 20px 45px rgba(0,0,0,.34)!important;
+}
+p,.subtitle,.muted,.description{color:var(--muted)!important}
+table{background:#14191f!important;color:var(--text)!important}
+th{background:#20262f!important;color:#fff!important;border-color:#343d49!important}
+td{border-color:#2a323d!important}
+tr:hover td{background:#1c222a!important}
+.badge,.status{border:1px solid rgba(255,255,255,.09)!important}
+.car-image img,.image-box img,.vehicle-image img,.car-img img,.car-card img,.card img{
+  object-fit:cover!important;
+  width:100%;
+  display:block;
+}
+.car-image,.image-box,.vehicle-image,.car-img{
+  overflow:hidden!important;
+  background:#0d1116!important;
+}
+hr{border-color:var(--line)!important}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#0c0f13}
+::-webkit-scrollbar-thumb{background:#363f4b;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+@media(max-width:768px){
+  .navbar{padding-left:18px!important;padding-right:18px!important}
+  .sidebar{width:220px!important}
+}
+.hero{
+  background:
+    linear-gradient(rgba(6,8,10,.60),rgba(6,8,10,.82)),
+    url('../images/cars/bugatti.jpg') center/cover no-repeat!important;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  inset:auto 0 0 0;
+  height:180px;
+  background:linear-gradient(transparent,#0b0d10);
+  pointer-events:none;
+}
+
+/* Premium depth pass */
+.navbar,.topbar,.sidebar{background:rgba(12,16,21,.94)!important;}
+.card,.box,.profile-box,.welcome,.header,.form-container,.invoice-box,.booking-box,.content-box,.stat-card,.vehicle-card,.table-container{
+  background:linear-gradient(145deg,rgba(24,29,36,.96),rgba(13,17,22,.94))!important;
+}
+.vehicle-card .image-box,.car-section,.vehicle-image{box-shadow:inset 0 -45px 60px rgba(0,0,0,.28)!important;}
+.heading,h1,h2{letter-spacing:.2px;}
