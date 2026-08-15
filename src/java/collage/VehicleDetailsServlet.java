@@ -23,11 +23,15 @@ public class VehicleDetailsServlet extends HttpServlet {
         String id = request.getParameter("id");
 
         if (id == null || id.trim().isEmpty()) {
-            response.sendRedirect("VehicleServlet");
+            response.sendRedirect(
+                    request.getContextPath() + "/VehicleServlet"
+            );
             return;
         }
 
-        String sql = "SELECT * FROM vehicles WHERE id = ?";
+        String sql =
+                "SELECT id, name, brand, type, price, image, status "
+                + "FROM vehicles WHERE id = ?";
 
         try {
 
@@ -36,11 +40,30 @@ public class VehicleDetailsServlet extends HttpServlet {
             PreparedStatement ps =
                     con.prepareStatement(sql);
 
-            ps.setInt(1, Integer.parseInt(id));
+            ps.setInt(
+                    1,
+                    Integer.parseInt(id)
+            );
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs =
+                    ps.executeQuery();
 
             if (rs.next()) {
+
+                String carName =
+                        rs.getString("name");
+
+                String image =
+                        rs.getString("image");
+
+                if (image == null
+                        || image.trim().isEmpty()) {
+
+                    image =
+                            VehicleImageUtil.getImage(
+                                    carName
+                            );
+                }
 
                 request.setAttribute(
                         "id",
@@ -49,12 +72,12 @@ public class VehicleDetailsServlet extends HttpServlet {
 
                 request.setAttribute(
                         "carName",
-                        rs.getString("car_name")
+                        carName
                 );
 
                 request.setAttribute(
                         "image",
-                        VehicleImageUtil.getImage(rs.getString("car_name"))
+                        image
                 );
 
                 request.setAttribute(
@@ -64,42 +87,42 @@ public class VehicleDetailsServlet extends HttpServlet {
 
                 request.setAttribute(
                         "engine",
-                        rs.getString("engine")
+                        rs.getString("brand")
                 );
 
                 request.setAttribute(
                         "power",
-                        rs.getString("power")
+                        "Premium Performance"
                 );
 
                 request.setAttribute(
                         "speed",
-                        rs.getString("speed")
+                        "High Performance"
                 );
 
                 request.setAttribute(
                         "fuel",
-                        rs.getString("fuel")
+                        "Petrol"
                 );
 
                 request.setAttribute(
                         "seats",
-                        rs.getString("seats")
+                        "5"
                 );
 
                 request.setAttribute(
                         "transmission",
-                        rs.getString("transmission")
+                        "Automatic"
                 );
 
                 request.setAttribute(
                         "category",
-                        rs.getString("category")
+                        rs.getString("type")
                 );
 
                 request.setAttribute(
                         "description",
-                        rs.getString("description")
+                        "Premium luxury vehicle available for rental."
                 );
 
                 request.setAttribute(
@@ -108,30 +131,40 @@ public class VehicleDetailsServlet extends HttpServlet {
                 );
 
                 RequestDispatcher rd =
-        request.getRequestDispatcher("/vehicledetail.jsp");
-                        
+                        request.getRequestDispatcher(
+                                "/vehicledetail.jsp"
+                        );
 
-                rd.forward(request, response);
+                rd.forward(
+                        request,
+                        response
+                );
 
             } else {
 
-                response.sendRedirect("VehicleServlet");
+                response.sendRedirect(
+                        request.getContextPath()
+                        + "/VehicleServlet"
+                );
             }
 
             rs.close();
             ps.close();
-            con.close();
 
         } catch (NumberFormatException e) {
 
-            response.sendRedirect("VehicleServlet");
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/VehicleServlet"
+            );
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
             response.sendRedirect(
-                    "VehicleServlet?error=details"
+                    request.getContextPath()
+                    + "/VehicleServlet?error=details"
             );
         }
     }
