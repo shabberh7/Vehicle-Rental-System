@@ -20,13 +20,18 @@ public class CancelBookingServlet extends HttpServlet {
 
         try {
 
-            int bookingId = Integer.parseInt(request.getParameter("id"));
+            int bookingId = Integer.parseInt(
+                    request.getParameter("id")
+            );
 
             Connection con = DBConnection.getConnection();
 
-            String sql = "UPDATE bookings SET booking_status='Cancelled' WHERE id=?";
+            // Correct column name = status
+            String sql =
+                    "UPDATE bookings SET status='Cancelled' WHERE id=?";
 
-            PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps =
+                    con.prepareStatement(sql);
 
             ps.setInt(1, bookingId);
 
@@ -35,13 +40,18 @@ public class CancelBookingServlet extends HttpServlet {
             ps.close();
             con.close();
 
-            response.sendRedirect(request.getContextPath() + "/MyBookingsServlet");
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/MyBookingsServlet"
+            );
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-            response.getWriter().println(e.getMessage());
+            response.getWriter().println(
+                    e.getMessage()
+            );
         }
     }
 }
