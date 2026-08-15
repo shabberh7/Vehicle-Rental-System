@@ -15,35 +15,23 @@ public class DBConnection {
 
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
-                con = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/vehicle_rental",
-                        "root",
-                        "123456789"
-                );
+                String host = System.getenv("DB_HOST");
+                String port = System.getenv("DB_PORT");
+                String database = System.getenv("DB_NAME");
+                String user = System.getenv("DB_USER");
+                String password = System.getenv("DB_PASSWORD");
+
+                String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+
+                con = DriverManager.getConnection(url, user, password);
 
                 System.out.println("Database Connected Successfully");
-
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return con;
     }
-
-    // Test Database Connection
-    public static void main(String[] args) {
-
-        Connection conn = DBConnection.getConnection();
-
-        if (conn != null) {
-            System.out.println("Connection Successful");
-        } else {
-            System.out.println("Connection Failed");
-        }
-
-    }
-
 }
