@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -40,7 +41,10 @@ public class BookVehicleServlet extends HttpServlet {
         Connection con = null;
         PreparedStatement pricePs = null;
         PreparedStatement bookingPs = null;
+        PreparedStatement detailPs = null;
         ResultSet rs = null;
+        ResultSet keyRs = null;
+        ResultSet detailRs = null;
 
         try {
 
@@ -113,12 +117,6 @@ public class BookVehicleServlet extends HttpServlet {
                 return;
             }
 
-            /*
-             Pickup aur return same date ho to 1 day charge.
-             Example:
-             29 Aug se 30 Aug = 1 day
-             29 Aug se 31 Aug = 2 days
-            */
             long totalDays = ChronoUnit.DAYS.between(
                     pickupLocalDate,
                     returnLocalDate
@@ -130,10 +128,6 @@ public class BookVehicleServlet extends HttpServlet {
 
             con = DBConnection.getConnection();
 
-            /*
-             Vehicle ka price database se niklega.
-             Hidden field par depend nahi karenge.
-            */
             String priceSql =
                     "SELECT price FROM vehicles WHERE id = ?";
 
@@ -164,46 +158,125 @@ public class BookVehicleServlet extends HttpServlet {
                     + "total_price, status) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-            bookingPs =
-                    con.prepareStatement(bookingSql);
+            bookingPs = con.prepareStatement(
+                    bookingSql,
+                    Statement.RETURN_GENERATED_KEYS
+            );
 
             bookingPs.setInt(1, userId);
             bookingPs.setInt(2, vehicleId);
-
-            bookingPs.setDate(
-                    3,
-                    Date.valueOf(pickupLocalDate)
-            );
-
-            bookingPs.setDate(
-                    4,
-                    Date.valueOf(returnLocalDate)
-            );
-
+            bookingPs.setDate(3, Date.valueOf(pickupLocalDate));
+            bookingPs.setDate(4, Date.valueOf(returnLocalDate));
             bookingPs.setString(5, location);
             bookingPs.setString(6, paymentMethod);
             bookingPs.setDouble(7, totalPrice);
             bookingPs.setString(8, "pending");
 
-            int result =
-                    bookingPs.executeUpdate();
+            int result = bookingPs.executeUpdate();
 
             if (result > 0) {
 
-                response.sendRedirect(
-                        request.getContextPath()
-                        + "/MyBookingsServlet?success=booked"
-                );
+                keyRs = bookingPs.getGeneratedKeys();
 
-            } else {
+                int bookingId = 0;
 
-                response.sendRedirect(
-                        request.getContextPath()
-                        + "/book-vehicle.jsp?id="
-                        + vehicleId
-                        + "&error=failed"
-                );
+                if (keyRs.next()) {
+                    bookingId = keyRs.getInt(1);
+                }
+
+                String detailSql =
+                        "SELECT "
+                        + "u.name AS customer_name, "
+                        + "u.email AS customer_email, "
+                        + "u.mobile AS customer_mobile, "
+                        + "v.name AS car_name, "
+                        + "v.image AS car_image "
+                        + "FROM users u, vehicles v "
+                        + "WHERE u.id = ? AND v.id = ?";
+
+                detailPs = con.prepareStatement(detailSql);
+
+                detailPs.setInt(1, userId);
+                detailPs.setInt(2, vehicleId);
+
+                detailRs = detailPs.executeQuery();
+
+                if (detailRs.next()) {
+
+                    request.setAttribute(
+                            "bookingId",
+                            bookingId
+                    );
+
+                    request.setAttribute(
+                            "customerName",
+                            detailRs.getString("customer_name")
+                    );
+
+                    request.setAttribute(
+                            "customerEmail",
+                            detailRs.getString("customer_email")
+                    );
+
+                    request.setAttribute(
+                            "customerMobile",
+                            detailRs.getString("customer_mobile")
+                    );
+
+                    request.setAttribute(
+                            "carName",
+                            detailRs.getString("car_name")
+                    );
+
+                    request.setAttribute(
+                            "carImage",
+                            detailRs.getString("car_image")
+                    );
+
+                    request.setAttribute(
+                            "pickupDate",
+                            Date.valueOf(pickupLocalDate)
+                    );
+
+                    request.setAttribute(
+                            "returnDate",
+                            Date.valueOf(returnLocalDate)
+                    );
+
+                    request.setAttribute(
+                            "location",
+                            location
+                    );
+
+                    request.setAttribute(
+                            "paymentMethod",
+                            paymentMethod
+                    );
+
+                    request.setAttribute(
+                            "totalPrice",
+                            totalPrice
+                    );
+
+                    request.setAttribute(
+                            "bookingStatus",
+                            "pending"
+                    );
+
+                    request.getRequestDispatcher(
+                            "/invoice.jsp"
+                    ).forward(request, response);
+
+                    return;
+                }
             }
+
+            response.sendRedirect(
+                    request.getContextPath()
+                    + "/book-vehicle.jsp?id="
+                    + vehicleId
+                    + "&error=failed"
+            );
 
         } catch (Exception e) {
 
@@ -217,19 +290,12 @@ public class BookVehicleServlet extends HttpServlet {
         } finally {
 
             try {
-
-                if (rs != null) {
-                    rs.close();
-                }
-
-                if (pricePs != null) {
-                    pricePs.close();
-                }
-
-                if (bookingPs != null) {
-                    bookingPs.close();
-                }
-
+                if (detailRs != null) detailRs.close();
+                if (keyRs != null) keyRs.close();
+                if (rs != null) rs.close();
+                if (detailPs != null) detailPs.close();
+                if (pricePs != null) pricePs.close();
+                if (bookingPs != null) bookingPs.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
