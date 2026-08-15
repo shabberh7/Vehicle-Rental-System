@@ -95,7 +95,7 @@ public class MyBookingsServlet extends HttpServlet {
                 + "b.payment_method, "
                 + "b.total_price, "
                 + "b.status, "
-                + "v.car_name "
+                + "v.name AS car_name "
                 + "FROM bookings b "
                 + "INNER JOIN vehicles v "
                 + "ON b.vehicle_id = v.id "
@@ -138,7 +138,9 @@ public class MyBookingsServlet extends HttpServlet {
                     );
 
                     booking.setImage(
-                            VehicleImageUtil.getImage(rs.getString("car_name"))
+                            VehicleImageUtil.getImage(
+                                    rs.getString("car_name")
+                            )
                     );
 
                     booking.setPickupDate(
