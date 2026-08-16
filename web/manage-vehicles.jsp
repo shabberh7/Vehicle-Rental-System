@@ -26,23 +26,8 @@
 %>
 
 <%
-    if (session.getAttribute("adminLoggedIn") == null
-            || !Boolean.TRUE.equals(
-                    session.getAttribute("adminLoggedIn"))) {
-
-        response.sendRedirect(
-                request.getContextPath()
-                + "/admin-login.jsp"
-        );
-
-        return;
-    }
-
-    String success =
-            request.getParameter("success");
-
-    String error =
-            request.getParameter("error");
+    String success = request.getParameter("success");
+    String error = request.getParameter("error");
 
     DecimalFormat priceFormat =
             new DecimalFormat("#,##0.00");
@@ -147,7 +132,7 @@ body{
     background:#00ffcc;
 }
 
-/* CONTAINER */
+/* MAIN */
 
 .container{
     width:92%;
@@ -229,7 +214,7 @@ body{
     white-space:nowrap;
 }
 
-/* MESSAGES */
+/* MESSAGE */
 
 .message{
     padding:15px;
@@ -253,7 +238,7 @@ body{
     background:#ff4d5a;
 }
 
-/* GRID */
+/* VEHICLE GRID */
 
 .vehicle-grid{
     display:grid;
@@ -285,6 +270,9 @@ body{
 
 .card:hover{
     transform:translateY(-6px);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.45);
 }
 
 .image-box{
@@ -303,6 +291,7 @@ body{
     height:100%;
 
     object-fit:cover;
+
     display:block;
 }
 
@@ -377,8 +366,7 @@ body{
 .details-grid{
     display:grid;
 
-    grid-template-columns:
-        1fr 1fr;
+    grid-template-columns:1fr 1fr;
 
     gap:10px;
 
@@ -432,6 +420,12 @@ body{
     font-weight:bold;
 
     cursor:pointer;
+
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
 }
 
 .edit{
@@ -520,6 +514,7 @@ href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 
 <body>
 
+
 <div class="navbar">
 
     <div class="logo">
@@ -550,6 +545,7 @@ href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 
 
 <div class="container">
+
 
 <h1 class="heading">
     🚘 Manage Vehicles
@@ -624,6 +620,7 @@ if ("deleteFailed".equals(error)) {
 
     </div>
 
+
     <a
         href="<%= request.getContextPath() %>/add-vehicle.jsp"
         class="add-btn">
@@ -638,6 +635,7 @@ if ("deleteFailed".equals(error)) {
 <div class="vehicle-grid"
      id="vehicleGrid">
 
+
 <%
 
 Connection con = null;
@@ -651,39 +649,51 @@ try {
     con =
         DBConnection.getConnection();
 
+
     String sql =
         "SELECT id, name, brand, type, "
         + "price, image, status "
         + "FROM vehicles "
         + "ORDER BY id DESC";
 
+
     ps =
         con.prepareStatement(sql);
+
 
     rs =
         ps.executeQuery();
 
+
     while(rs.next()) {
 
+
         vehicleFound = true;
+
 
         int vehicleId =
             rs.getInt("id");
 
+
         String carName =
             rs.getString("name");
+
 
         String brand =
             rs.getString("brand");
 
+
         String type =
             rs.getString("type");
+
 
         double price =
             rs.getDouble("price");
 
+
         String image =
             rs.getString("image");
+
 
         String status =
             rs.getString("status");
@@ -709,34 +719,50 @@ try {
 
 <div
     class="card vehicle-card"
+
     data-name="<%= safeText(carName).toLowerCase() %>"
+
     data-brand="<%= safeText(brand).toLowerCase() %>"
+
     data-type="<%= safeText(type).toLowerCase() %>">
 
 
 <div class="image-box">
 
-    <img
-        src="<%= imagePath %>"
-        alt="<%= safeText(carName) %>"
-        onerror="this.onerror=null;
-        this.src='<%= request.getContextPath() %>/images/cars/bugatti.jpg';">
 
-    <span class="vehicle-id">
-        ID: <%= vehicleId %>
-    </span>
+<img
+    src="<%= imagePath %>"
 
-    <span class="type-tag">
-        <%= safeText(type) %>
-    </span>
+    alt="<%= safeText(carName) %>"
+
+    onerror="this.onerror=null;
+    this.src='<%= request.getContextPath() %>/images/cars/bugatti.jpg';">
+
+
+<span class="vehicle-id">
+
+    ID: <%= vehicleId %>
+
+</span>
+
+
+<span class="type-tag">
+
+    <%= safeText(type) %>
+
+</span>
+
 
 </div>
 
 
 <div class="content">
 
+
 <h2>
+
     <%= safeText(carName) %>
+
 </h2>
 
 
@@ -753,45 +779,59 @@ try {
 
 <div class="details-grid">
 
-    <div class="detail">
-        🏷 Brand:
-        <%= safeText(brand) %>
-    </div>
 
-    <div class="detail">
-        🚘 Type:
-        <%= safeText(type) %>
-    </div>
+<div class="detail">
+
+    🏷 Brand:
+
+    <%= safeText(brand) %>
+
+</div>
+
+
+<div class="detail">
+
+    🚘 Type:
+
+    <%= safeText(type) %>
+
+</div>
+
 
 </div>
 
 
 <p class="status">
 
-    ●
-    <%= safeText(status) %>
+    ● <%= safeText(status) %>
 
 </p>
 
 
 <div class="button-row">
 
-    <a
-        href="<%= request.getContextPath() %>/edit-vehicle.jsp?id=<%= vehicleId %>"
-        class="btn edit">
 
-        ✏ Edit
+<a
+    href="<%= request.getContextPath() %>/edit-vehicle.jsp?id=<%= vehicleId %>"
 
-    </a>
+    class="btn edit">
 
-    <a
-        href="<%= request.getContextPath() %>/DeleteVehicleServlet?id=<%= vehicleId %>"
-        class="btn delete"
-        onclick="return confirmDelete('<%= safeText(carName) %>');">
+    ✏ Edit
 
-        🗑 Delete
+</a>
 
-    </a>
+
+<a
+    href="<%= request.getContextPath() %>/DeleteVehicleServlet?id=<%= vehicleId %>"
+
+    class="btn delete"
+
+    onclick="return confirmDelete('<%= safeText(carName) %>');">
+
+    🗑 Delete
+
+</a>
+
 
 </div>
 
@@ -828,7 +868,9 @@ try {
 
     }
 
+
 } catch(Exception e) {
+
 
     e.printStackTrace();
 
@@ -852,23 +894,34 @@ try {
 
 } finally {
 
+
     try {
 
+
         if(rs != null) {
+
             rs.close();
+
         }
 
+
         if(ps != null) {
+
             ps.close();
+
         }
+
 
     } catch(Exception e) {
 
         e.printStackTrace();
+
     }
+
 }
 
 %>
+
 
 </div>
 
@@ -877,7 +930,9 @@ try {
 
 <script>
 
+
 function searchVehicles(){
+
 
     const searchValue =
         document
@@ -899,15 +954,18 @@ function searchVehicles(){
     cards.forEach(
         function(card){
 
+
             const name =
                 card.getAttribute(
                     "data-name"
                 ) || "";
 
+
             const brand =
                 card.getAttribute(
                     "data-brand"
                 ) || "";
+
 
             const type =
                 card.getAttribute(
@@ -919,10 +977,12 @@ function searchVehicles(){
                 name.includes(
                     searchValue
                 )
-                || brand.includes(
+                ||
+                brand.includes(
                     searchValue
                 )
-                || type.includes(
+                ||
+                type.includes(
                     searchValue
                 );
 
@@ -931,21 +991,27 @@ function searchVehicles(){
                 matched
                 ? "flex"
                 : "none";
+
         }
     );
+
 }
 
 
 function confirmDelete(vehicleName){
+
 
     return confirm(
         "Kya aap "
         + vehicleName
         + " ko delete karna chahte ho?"
     );
+
 }
 
+
 </script>
+
 
 </body>
 
