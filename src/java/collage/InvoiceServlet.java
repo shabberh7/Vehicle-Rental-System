@@ -16,51 +16,6 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/InvoiceServlet")
 public class InvoiceServlet extends HttpServlet {
 
-    private String getVehicleImage(int vehicleId) {
-
-        switch (vehicleId) {
-
-            case 1:
-                return "images/cars/bugatti.jpg";
-
-            case 2:
-                return "images/cars/ferrari.jpg";
-
-            case 3:
-                return "images/cars/lamborghini.jpg";
-
-            case 4:
-                return "images/cars/rollsroyce.jpg";
-
-            case 5:
-                return "images/cars/bentley.jpg";
-
-            case 6:
-                return "images/cars/mclaren2.jpg";
-
-            case 7:
-                return "images/cars/porsche.jpg";
-
-            case 8:
-                return "images/cars/mclaren.jpg";
-
-            case 9:
-                return "images/cars/astonmartin.jpg";
-
-            case 10:
-                return "images/cars/range rover.jpg";
-
-            case 11:
-                return "images/cars/bmwm8.jpg";
-
-            case 12:
-                return "images/cars/audir8.jpg";
-
-            default:
-                return "images/cars/bugatti.jpg";
-        }
-    }
-
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -75,7 +30,6 @@ public class InvoiceServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath() + "/login.jsp"
             );
-
             return;
         }
 
@@ -99,7 +53,6 @@ public class InvoiceServlet extends HttpServlet {
                         request.getContextPath()
                         + "/MyBookingsServlet"
                 );
-
                 return;
             }
 
@@ -121,7 +74,7 @@ public class InvoiceServlet extends HttpServlet {
                     + "u.name AS customer_name, "
                     + "u.email AS customer_email, "
                     + "u.mobile AS customer_mobile, "
-                    + "v.car_name "
+                    + "v.name AS car_name "
                     + "FROM bookings b "
                     + "INNER JOIN users u "
                     + "ON b.user_id = u.id "
@@ -139,11 +92,11 @@ public class InvoiceServlet extends HttpServlet {
 
             if (rs.next()) {
 
-                int vehicleId =
-                        rs.getInt("vehicle_id");
+                String carName =
+                        rs.getString("car_name");
 
                 String carImage =
-                        VehicleImageUtil.getImage(rs.getString("car_name"));
+                        VehicleImageUtil.getImage(carName);
 
                 request.setAttribute(
                         "bookingId",
@@ -167,7 +120,7 @@ public class InvoiceServlet extends HttpServlet {
 
                 request.setAttribute(
                         "carName",
-                        rs.getString("car_name")
+                        carName
                 );
 
                 request.setAttribute(
@@ -214,25 +167,11 @@ public class InvoiceServlet extends HttpServlet {
 
             } else {
 
-                request.setAttribute(
-                        "errorMessage",
-                        "Invoice or booking not found."
+                response.sendRedirect(
+                        request.getContextPath()
+                        + "/MyBookingsServlet"
                 );
-
-                RequestDispatcher rd =
-                        request.getRequestDispatcher(
-                                "/MyBookingsServlet"
-                        );
-
-                rd.forward(request, response);
             }
-
-        } catch (NumberFormatException e) {
-
-            response.sendRedirect(
-                    request.getContextPath()
-                    + "/MyBookingsServlet"
-            );
 
         } catch (Exception e) {
 
@@ -243,12 +182,9 @@ public class InvoiceServlet extends HttpServlet {
                     "Invoice load karte samay error aa gaya."
             );
 
-            RequestDispatcher rd =
-                    request.getRequestDispatcher(
-                            "/MyBookingsServlet"
-                    );
-
-            rd.forward(request, response);
+            request.getRequestDispatcher(
+                    "/MyBookingsServlet"
+            ).forward(request, response);
 
         } finally {
 
