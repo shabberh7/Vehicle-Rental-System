@@ -20,29 +20,33 @@ public class DeleteUserServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+        HttpSession session =
+                request.getSession(false);
 
+        // New admin session check
         if (session == null
-                || session.getAttribute("userId") == null
-                || session.getAttribute("userRole") == null
-                || !"admin".equalsIgnoreCase(
-                        session.getAttribute("userRole").toString()
+                || session.getAttribute("adminLoggedIn") == null
+                || !Boolean.TRUE.equals(
+                        session.getAttribute("adminLoggedIn")
                 )) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/login.jsp"
+                    request.getContextPath()
+                    + "/admin-login.jsp"
             );
 
             return;
         }
 
-        String userIdValue = request.getParameter("id");
+        String userIdValue =
+                request.getParameter("id");
 
         int userId;
 
         try {
 
-            userId = Integer.parseInt(userIdValue);
+            userId =
+                    Integer.parseInt(userIdValue);
 
         } catch (Exception e) {
 
@@ -55,34 +59,54 @@ public class DeleteUserServlet extends HttpServlet {
         }
 
         Connection con = null;
+
         PreparedStatement deleteBookingsPs = null;
+
         PreparedStatement deleteUserPs = null;
 
         try {
 
-            con = DBConnection.getConnection();
+            con =
+                    DBConnection.getConnection();
 
             con.setAutoCommit(false);
 
+            /*
+             Pehle user ki bookings delete hongi
+            */
             String deleteBookingsSql =
-                    "DELETE FROM bookings WHERE user_id = ?";
+                    "DELETE FROM bookings "
+                    + "WHERE user_id = ?";
 
             deleteBookingsPs =
-                    con.prepareStatement(deleteBookingsSql);
+                    con.prepareStatement(
+                            deleteBookingsSql
+                    );
 
-            deleteBookingsPs.setInt(1, userId);
+            deleteBookingsPs.setInt(
+                    1,
+                    userId
+            );
 
             deleteBookingsPs.executeUpdate();
 
+            /*
+             Ab user delete hoga
+            */
             String deleteUserSql =
                     "DELETE FROM users "
                     + "WHERE id = ? "
                     + "AND LOWER(role) = 'user'";
 
             deleteUserPs =
-                    con.prepareStatement(deleteUserSql);
+                    con.prepareStatement(
+                            deleteUserSql
+                    );
 
-            deleteUserPs.setInt(1, userId);
+            deleteUserPs.setInt(
+                    1,
+                    userId
+            );
 
             int deletedRows =
                     deleteUserPs.executeUpdate();
@@ -155,6 +179,9 @@ public class DeleteUserServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        doGet(request, response);
+        doGet(
+                request,
+                response
+        );
     }
 }
