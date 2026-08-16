@@ -8,16 +8,6 @@
 <%@ page import="collage.DBConnection" %>
 
 <%
-    if (session.getAttribute("userId") == null
-            || session.getAttribute("userRole") == null
-            || !"admin".equalsIgnoreCase(
-                    session.getAttribute("userRole").toString()
-            )) {
-
-        response.sendRedirect("login.jsp");
-        return;
-    }
-
     String success = request.getParameter("success");
     String error = request.getParameter("error");
 %>
@@ -48,14 +38,25 @@ body{
     color:white;
 
     background:
-        radial-gradient(circle at top left,
-        rgba(0,255,204,0.12),transparent 30%),
-
-        radial-gradient(circle at bottom right,
-        rgba(0,119,255,0.16),transparent 35%),
-
-        linear-gradient(135deg,#07111f,#141e30,#243b55);
+        radial-gradient(
+            circle at top left,
+            rgba(0,255,204,0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(0,119,255,0.16),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #07111f,
+            #141e30,
+            #243b55
+        );
 }
+
+/* NAVBAR */
 
 .navbar{
     min-height:75px;
@@ -79,6 +80,7 @@ body{
 .logo{
     font-size:29px;
     font-weight:bold;
+
     color:#00ffcc;
 }
 
@@ -101,8 +103,11 @@ body{
 
 .nav-links a:hover{
     color:#07111f;
+
     background:#00ffcc;
 }
+
+/* MAIN */
 
 .container{
     width:94%;
@@ -129,6 +134,8 @@ body{
     margin-bottom:30px;
 }
 
+/* MESSAGE */
+
 .message{
     max-width:800px;
 
@@ -145,13 +152,17 @@ body{
 
 .success-message{
     color:#05251e;
+
     background:#00ffcc;
 }
 
 .error-message{
     color:white;
+
     background:#ff4d5a;
 }
+
+/* SEARCH */
 
 .search-box{
     max-width:650px;
@@ -165,6 +176,7 @@ body{
     padding:15px 20px;
 
     border:2px solid transparent;
+
     outline:none;
 
     border-radius:30px;
@@ -178,6 +190,8 @@ body{
     box-shadow:
         0 0 0 4px rgba(0,255,204,0.13);
 }
+
+/* TABLE */
 
 .table-box{
     overflow-x:auto;
@@ -203,6 +217,7 @@ table{
 
 thead{
     background:#00ffcc;
+
     color:#07111f;
 }
 
@@ -230,22 +245,29 @@ tbody tr{
 }
 
 tbody tr:hover{
-    background:rgba(255,255,255,0.06);
+    background:
+        rgba(255,255,255,0.06);
 }
+
+/* USER DATA */
 
 .user-name{
     color:#00ffcc;
+
     font-weight:bold;
 }
 
 .email{
     color:#94a3b8;
+
     font-size:13px;
+
     margin-top:4px;
 }
 
 .booking-count{
     color:#00ffcc;
+
     font-weight:bold;
 }
 
@@ -261,15 +283,21 @@ tbody tr:hover{
     text-align:center;
 
     color:#05251e;
+
     background:#00ffcc;
 
     font-size:13px;
+
     font-weight:bold;
 }
 
+/* BUTTONS */
+
 .action-box{
     display:flex;
+
     flex-wrap:wrap;
+
     gap:8px;
 }
 
@@ -285,6 +313,7 @@ tbody tr:hover{
     text-decoration:none;
 
     font-size:12px;
+
     font-weight:bold;
 
     cursor:pointer;
@@ -294,32 +323,41 @@ tbody tr:hover{
 
 .btn:hover{
     transform:translateY(-2px);
+
     filter:brightness(1.10);
 }
 
 .view-btn{
     color:#07111f;
+
     background:#00ffcc;
 }
 
 .delete-btn{
     color:white;
+
     background:#ff4d5a;
 }
 
+/* EMPTY */
+
 .empty-box{
     padding:60px 20px;
+
     text-align:center;
 }
 
 .empty-box h2{
     color:#00ffcc;
+
     margin-bottom:12px;
 }
 
 .empty-box p{
     color:#cbd5e1;
 }
+
+/* MOBILE */
 
 @media(max-width:800px){
 
@@ -333,6 +371,7 @@ tbody tr:hover{
 
     .nav-links{
         flex-wrap:wrap;
+
         justify-content:center;
     }
 
@@ -343,11 +382,13 @@ tbody tr:hover{
 
 </style>
 
+<link rel="stylesheet"
+href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 
-<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 </head>
 
 <body>
+
 
 <div class="navbar">
 
@@ -357,23 +398,23 @@ tbody tr:hover{
 
     <div class="nav-links">
 
-        <a href="admin-dashboard.jsp">
+        <a href="<%= request.getContextPath() %>/admin-dashboard.jsp">
             Dashboard
         </a>
 
-        <a href="manage-vehicles.jsp">
+        <a href="<%= request.getContextPath() %>/manage-vehicles.jsp">
             Vehicles
         </a>
 
-        <a href="admin-booking.jsp">
+        <a href="<%= request.getContextPath() %>/admin-booking.jsp">
             Bookings
         </a>
 
-        <a href="manage-users.jsp">
+        <a href="<%= request.getContextPath() %>/manage-users.jsp">
             Users
         </a>
 
-        <a href="LogoutServlet">
+        <a href="<%= request.getContextPath() %>/LogoutServlet">
             Logout
         </a>
 
@@ -381,314 +422,437 @@ tbody tr:hover{
 
 </div>
 
+
 <div class="container">
 
-    <h1 class="heading">
-        👥 Manage Users
-    </h1>
 
-    <p class="subtitle">
-        View and manage all registered customers.
-    </p>
+<h1 class="heading">
+    👥 Manage Users
+</h1>
 
-    <% if ("deleted".equals(success)) { %>
+<p class="subtitle">
+    View and manage all registered customers.
+</p>
 
-        <div class="message success-message">
-            User successfully deleted ✅
-        </div>
-
-    <% } %>
-
-    <% if ("deleteFailed".equals(error)) { %>
-
-        <div class="message error-message">
-            User delete nahi hua ❌
-        </div>
-
-    <% } %>
-
-    <% if ("invalidUser".equals(error)) { %>
-
-        <div class="message error-message">
-            Invalid user information ❌
-        </div>
-
-    <% } %>
-
-    <div class="search-box">
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search by name, email or mobile..."
-            onkeyup="searchUsers()">
-
-    </div>
-
-    <div class="table-box">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>ID</th>
-
-                    <th>Name</th>
-
-                    <th>Email</th>
-
-                    <th>Mobile</th>
-
-                    <th>Total Bookings</th>
-
-                    <th>Status</th>
-
-                    <th>Action</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
 
 <%
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-
-    boolean userFound = false;
-
-    try {
-
-        con = DBConnection.getConnection();
-
-        String sql =
-                "SELECT "
-                + "u.id, "
-                + "u.name, "
-                + "u.email, "
-                + "u.mobile, "
-                + "COUNT(b.id) AS total_bookings "
-                + "FROM users u "
-                + "LEFT JOIN bookings b "
-                + "ON u.id = b.user_id "
-                + "WHERE LOWER(u.role) = 'user' "
-                + "GROUP BY "
-                + "u.id, u.name, u.email, u.mobile "
-                + "ORDER BY u.id DESC";
-
-        ps = con.prepareStatement(sql);
-
-        rs = ps.executeQuery();
-
-        while (rs.next()) {
-
-            userFound = true;
-
-            int userId =
-                    rs.getInt("id");
-
-            String userName =
-                    rs.getString("name");
-
-            String userEmail =
-                    rs.getString("email");
-
-            String userMobile =
-                    rs.getString("mobile");
-
-            int totalBookings =
-                    rs.getInt("total_bookings");
+if ("deleted".equals(success)) {
 %>
 
-                <tr class="user-row"
-                    data-search="<%= (
-                            userName + " "
-                            + userEmail + " "
-                            + userMobile
-                    ).toLowerCase() %>">
-
-                    <td>
-                        #<%= userId %>
-                    </td>
-
-                    <td>
-                        <div class="user-name">
-                            <%= userName %>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div class="email">
-                            <%= userEmail %>
-                        </div>
-                    </td>
-
-                    <td>
-                        <%= userMobile %>
-                    </td>
-
-                    <td class="booking-count">
-                        <%= totalBookings %>
-                    </td>
-
-                    <td>
-                        <span class="status">
-                            Active
-                        </span>
-                    </td>
-
-                    <td>
-
-                        <div class="action-box">
-
-                            <a
-                                href="view-user.jsp?id=<%= userId %>"
-                                class="btn view-btn">
-
-                                View
-
-                            </a>
-
-                            <a
-                                href="<%= request.getContextPath() %>/DeleteUserServlet?id=<%= userId %>"
-                                class="btn delete-btn"
-                                onclick="return confirmDelete('<%= userName %>');">
-
-                                Delete
-
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                </tr>
+<div class="message success-message">
+    User successfully deleted ✅
+</div>
 
 <%
-        }
-
-        if (!userFound) {
+}
 %>
 
-                <tr>
-
-                    <td colspan="7">
-
-                        <div class="empty-box">
-
-                            <h2>
-                                Koi user nahi mila
-                            </h2>
-
-                            <p>
-                                Register hone wale users yahan show honge.
-                            </p>
-
-                        </div>
-
-                    </td>
-
-                </tr>
 
 <%
-        }
-
-    } catch (Exception e) {
-
-        e.printStackTrace();
+if ("deleteFailed".equals(error)) {
 %>
 
-                <tr>
-
-                    <td colspan="7">
-
-                        <div class="empty-box">
-
-                            <h2>
-                                Database Error
-                            </h2>
-
-                            <p>
-                                Users load nahi hue. NetBeans console check karo.
-                            </p>
-
-                        </div>
-
-                    </td>
-
-                </tr>
+<div class="message error-message">
+    User delete nahi hua ❌
+</div>
 
 <%
-    } finally {
-
-        try {
-
-            if (rs != null) {
-                rs.close();
-            }
-
-            if (ps != null) {
-                ps.close();
-            }
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
+}
 %>
 
-            </tbody>
 
-        </table>
+<%
+if ("invalidUser".equals(error)) {
+%>
 
-    </div>
+<div class="message error-message">
+    Invalid user information ❌
+</div>
+
+<%
+}
+%>
+
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by name, email or mobile..."
+        onkeyup="searchUsers()">
 
 </div>
 
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+    <th>ID</th>
+
+    <th>Name</th>
+
+    <th>Email</th>
+
+    <th>Mobile</th>
+
+    <th>Total Bookings</th>
+
+    <th>Status</th>
+
+    <th>Action</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<%
+
+Connection con = null;
+PreparedStatement ps = null;
+ResultSet rs = null;
+
+boolean userFound = false;
+
+try {
+
+    con =
+        DBConnection.getConnection();
+
+
+    String sql =
+        "SELECT "
+        + "u.id, "
+        + "u.name, "
+        + "u.email, "
+        + "u.mobile, "
+        + "COUNT(b.id) AS total_bookings "
+        + "FROM users u "
+        + "LEFT JOIN bookings b "
+        + "ON u.id = b.user_id "
+        + "WHERE LOWER(u.role) = 'user' "
+        + "GROUP BY "
+        + "u.id, u.name, u.email, u.mobile "
+        + "ORDER BY u.id DESC";
+
+
+    ps =
+        con.prepareStatement(sql);
+
+
+    rs =
+        ps.executeQuery();
+
+
+    while(rs.next()) {
+
+
+        userFound = true;
+
+
+        int userId =
+            rs.getInt("id");
+
+
+        String userName =
+            rs.getString("name");
+
+
+        String userEmail =
+            rs.getString("email");
+
+
+        String userMobile =
+            rs.getString("mobile");
+
+
+        int totalBookings =
+            rs.getInt("total_bookings");
+
+%>
+
+
+<tr
+    class="user-row"
+
+    data-search="<%= (
+        userName + " "
+        + userEmail + " "
+        + userMobile
+    ).toLowerCase() %>">
+
+
+<td>
+
+    #<%= userId %>
+
+</td>
+
+
+<td>
+
+<div class="user-name">
+
+    <%= userName %>
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="email">
+
+    <%= userEmail %>
+
+</div>
+
+</td>
+
+
+<td>
+
+    <%= userMobile %>
+
+</td>
+
+
+<td class="booking-count">
+
+    <%= totalBookings %>
+
+</td>
+
+
+<td>
+
+<span class="status">
+
+    Active
+
+</span>
+
+</td>
+
+
+<td>
+
+<div class="action-box">
+
+
+<a
+    href="<%= request.getContextPath() %>/view-user.jsp?id=<%= userId %>"
+
+    class="btn view-btn">
+
+    View
+
+</a>
+
+
+<a
+    href="<%= request.getContextPath() %>/DeleteUserServlet?id=<%= userId %>"
+
+    class="btn delete-btn"
+
+    onclick="return confirmDelete('<%= userName %>');">
+
+    Delete
+
+</a>
+
+
+</div>
+
+</td>
+
+
+</tr>
+
+
+<%
+
+    }
+
+
+    if(!userFound) {
+
+%>
+
+
+<tr>
+
+<td colspan="7">
+
+<div class="empty-box">
+
+<h2>
+
+    Koi user nahi mila
+
+</h2>
+
+<p>
+
+    Register hone wale users yahan show honge.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<%
+
+    }
+
+
+} catch(Exception e) {
+
+
+    e.printStackTrace();
+
+%>
+
+
+<tr>
+
+<td colspan="7">
+
+<div class="empty-box">
+
+<h2>
+
+    Database Error
+
+</h2>
+
+<p>
+
+    Users load nahi hue.
+
+</p>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<%
+
+} finally {
+
+
+    try {
+
+
+        if(rs != null) {
+
+            rs.close();
+
+        }
+
+
+        if(ps != null) {
+
+            ps.close();
+
+        }
+
+
+    } catch(Exception e) {
+
+        e.printStackTrace();
+
+    }
+
+}
+
+%>
+
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
 <script>
 
-function searchUsers() {
+
+function searchUsers(){
 
     const searchValue =
         document
-        .getElementById("searchInput")
+        .getElementById(
+            "searchInput"
+        )
         .value
         .toLowerCase()
         .trim();
 
+
     const rows =
-        document.querySelectorAll(".user-row");
+        document
+        .querySelectorAll(
+            ".user-row"
+        );
 
-    rows.forEach(function(row) {
 
-        const searchData =
-            row.getAttribute("data-search") || "";
+    rows.forEach(
+        function(row){
 
-        if (searchData.includes(searchValue)) {
 
-            row.style.display = "";
+            const searchData =
+                row.getAttribute(
+                    "data-search"
+                ) || "";
 
-        } else {
 
-            row.style.display = "none";
+            row.style.display =
+                searchData.includes(
+                    searchValue
+                )
+                ? ""
+                : "none";
+
         }
-    });
+    );
+
 }
 
-function confirmDelete(userName) {
+
+function confirmDelete(userName){
 
     return confirm(
         "Kya aap "
         + userName
         + " ko delete karna chahte ho?"
     );
+
 }
 
+
 </script>
+
 
 </body>
 
