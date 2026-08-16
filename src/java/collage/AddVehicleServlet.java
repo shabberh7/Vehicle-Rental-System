@@ -34,19 +34,16 @@ public class AddVehicleServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        /*
-         Admin security check
-        */
+        // Admin session check
         if (session == null
-                || session.getAttribute("userId") == null
-                || !"admin".equalsIgnoreCase(
-                        String.valueOf(
-                                session.getAttribute("userRole")
-                        )
+                || session.getAttribute("adminLoggedIn") == null
+                || !Boolean.TRUE.equals(
+                        session.getAttribute("adminLoggedIn")
                 )) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/login.jsp"
+                    request.getContextPath()
+                    + "/admin-login.jsp"
             );
 
             return;
@@ -54,9 +51,6 @@ public class AddVehicleServlet extends HttpServlet {
 
         try {
 
-            /*
-             Form data receive karna
-            */
             String carName =
                     request.getParameter("carName");
 
@@ -66,42 +60,15 @@ public class AddVehicleServlet extends HttpServlet {
             String engine =
                     request.getParameter("engine");
 
-            String power =
-                    request.getParameter("power");
-
-            String speed =
-                    request.getParameter("speed");
-
-            String fuel =
-                    request.getParameter("fuel");
-
-            String seatsValue =
-                    request.getParameter("seats");
-
-            String transmission =
-                    request.getParameter("transmission");
-
             String category =
                     request.getParameter("category");
 
-            String description =
-                    request.getParameter("description");
-
-            /*
-             Empty validation
-            */
-            if (carName == null || carName.trim().isEmpty()
-                    || priceValue == null || priceValue.trim().isEmpty()
-                    || engine == null || engine.trim().isEmpty()
-                    || power == null || power.trim().isEmpty()
-                    || speed == null || speed.trim().isEmpty()
-                    || fuel == null || fuel.trim().isEmpty()
-                    || seatsValue == null || seatsValue.trim().isEmpty()
-                    || transmission == null
-                    || transmission.trim().isEmpty()
-                    || category == null || category.trim().isEmpty()
-                    || description == null
-                    || description.trim().isEmpty()) {
+            if (carName == null
+                    || carName.trim().isEmpty()
+                    || priceValue == null
+                    || priceValue.trim().isEmpty()
+                    || category == null
+                    || category.trim().isEmpty()) {
 
                 response.sendRedirect(
                         request.getContextPath()
@@ -114,85 +81,68 @@ public class AddVehicleServlet extends HttpServlet {
             double price =
                     Double.parseDouble(priceValue);
 
-            int seats =
-                    Integer.parseInt(seatsValue);
-
-            /*
-             Image receive karna
-            */
             Part imagePart =
                     request.getPart("image");
 
-            if (imagePart == null
-                    || imagePart.getSize() == 0) {
+            String imagePath = "";
 
-                response.sendRedirect(
-                        request.getContextPath()
-                        + "/add-vehicle.jsp?error=1"
+            if (imagePart != null
+                    && imagePart.getSize() > 0) {
+
+                String originalFileName =
+                        imagePart.getSubmittedFileName();
+
+                originalFileName =
+                        new File(
+                                originalFileName
+                        ).getName();
+
+                String extension = "";
+
+                int dotIndex =
+                        originalFileName.lastIndexOf(".");
+
+                if (dotIndex > 0) {
+
+                    extension =
+                            originalFileName.substring(
+                                    dotIndex
+                            );
+                }
+
+                String imageName =
+                        System.currentTimeMillis()
+                        + extension;
+
+                String uploadPath =
+                        getServletContext()
+                        .getRealPath(
+                                "/images/vehicles"
+                        );
+
+                File uploadFolder =
+                        new File(uploadPath);
+
+                if (!uploadFolder.exists()) {
+
+                    uploadFolder.mkdirs();
+                }
+
+                imagePart.write(
+                        uploadPath
+                        + File.separator
+                        + imageName
                 );
 
-                return;
+                imagePath =
+                        "images/vehicles/"
+                        + imageName;
             }
 
-            String originalFileName =
-                    imagePart.getSubmittedFileName();
-
-            /*
-             File name safe banana
-            */
-            originalFileName =
-                    new File(originalFileName).getName();
-
-            String extension = "";
-
-            int dotIndex =
-                    originalFileName.lastIndexOf(".");
-
-            if (dotIndex > 0) {
-
-                extension =
-                        originalFileName.substring(dotIndex);
-
-            }
-
-            String imageName =
-                    System.currentTimeMillis() + extension;
-
-            /*
-             images/vehicles folder banana
-            */
-            String uploadPath =
-                    getServletContext().getRealPath(
-                            "/images/vehicles"
-                    );
-
-            File uploadFolder =
-                    new File(uploadPath);
-
-            if (!uploadFolder.exists()) {
-
-                uploadFolder.mkdirs();
-
-            }
-
-            /*
-             Image save karna
-            */
-            imagePart.write(
-                    uploadPath
-                    + File.separator
-                    + imageName
-            );
-
-            /*
-             Database insert query
-            */
             String sql =
                     "INSERT INTO vehicles "
-                    + "(car_name, image, price, engine, "
-                    + "power, speed, fuel, seats, "
-                    + "transmission, category, description) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "(name, brand, type, price, image, status) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
 
             try (
                     Connection con =
@@ -202,25 +152,37 @@ public class AddVehicleServlet extends HttpServlet {
                             con.prepareStatement(sql)
             ) {
 
-                ps.setString(1, carName.trim());
-
-                /*
-                 Database me image ka relative path save hoga
-                */
                 ps.setString(
-                        2,
-                        "images/vehicles/" + imageName
+                        1,
+                        carName.trim()
                 );
 
-                ps.setDouble(3, price);
-                ps.setString(4, engine.trim());
-                ps.setString(5, power.trim());
-                ps.setString(6, speed.trim());
-                ps.setString(7, fuel);
-                ps.setInt(8, seats);
-                ps.setString(9, transmission);
-                ps.setString(10, category);
-                ps.setString(11, description.trim());
+                ps.setString(
+                        2,
+                        engine == null
+                                ? ""
+                                : engine.trim()
+                );
+
+                ps.setString(
+                        3,
+                        category.trim()
+                );
+
+                ps.setDouble(
+                        4,
+                        price
+                );
+
+                ps.setString(
+                        5,
+                        imagePath
+                );
+
+                ps.setString(
+                        6,
+                        "Available"
+                );
 
                 int rows =
                         ps.executeUpdate();
@@ -238,19 +200,8 @@ public class AddVehicleServlet extends HttpServlet {
                             request.getContextPath()
                             + "/add-vehicle.jsp?error=1"
                     );
-
                 }
-
             }
-
-        } catch (NumberFormatException e) {
-
-            e.printStackTrace();
-
-            response.sendRedirect(
-                    request.getContextPath()
-                    + "/add-vehicle.jsp?error=1"
-            );
 
         } catch (Exception e) {
 
@@ -260,9 +211,6 @@ public class AddVehicleServlet extends HttpServlet {
                     request.getContextPath()
                     + "/add-vehicle.jsp?error=1"
             );
-
         }
-
     }
-
 }
