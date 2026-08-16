@@ -23,16 +23,18 @@ public class UpdateBookingStatusServlet extends HttpServlet {
         HttpSession session =
                 request.getSession(false);
 
+        /*
+         New Admin Login session check
+        */
         if (session == null
-                || session.getAttribute("userId") == null
-                || session.getAttribute("userRole") == null
-                || !"admin".equalsIgnoreCase(
-                        session.getAttribute("userRole").toString()
+                || session.getAttribute("adminLoggedIn") == null
+                || !Boolean.TRUE.equals(
+                        session.getAttribute("adminLoggedIn")
                 )) {
 
             response.sendRedirect(
                     request.getContextPath()
-                    + "/login.jsp"
+                    + "/admin-login.jsp"
             );
 
             return;
@@ -61,7 +63,8 @@ public class UpdateBookingStatusServlet extends HttpServlet {
             return;
         }
 
-        if (status == null) {
+        if (status == null
+                || status.trim().isEmpty()) {
 
             response.sendRedirect(
                     request.getContextPath()
@@ -71,7 +74,8 @@ public class UpdateBookingStatusServlet extends HttpServlet {
             return;
         }
 
-        status = status.trim().toLowerCase();
+        status =
+                status.trim().toLowerCase();
 
         boolean validStatus =
                 status.equals("pending")
@@ -103,9 +107,15 @@ public class UpdateBookingStatusServlet extends HttpServlet {
             PreparedStatement ps =
                     con.prepareStatement(sql);
 
-            ps.setString(1, status);
+            ps.setString(
+                    1,
+                    status
+            );
 
-            ps.setInt(2, bookingId);
+            ps.setInt(
+                    2,
+                    bookingId
+            );
 
             int rowsUpdated =
                     ps.executeUpdate();
@@ -144,6 +154,9 @@ public class UpdateBookingStatusServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        doGet(request, response);
+        doGet(
+                request,
+                response
+        );
     }
 }
