@@ -26,18 +26,23 @@
 %>
 
 <%
-    if (session.getAttribute("userId") == null
-            || session.getAttribute("userRole") == null
-            || !"admin".equalsIgnoreCase(
-                    session.getAttribute("userRole").toString()
-            )) {
+    if (session.getAttribute("adminLoggedIn") == null
+            || !Boolean.TRUE.equals(
+                    session.getAttribute("adminLoggedIn"))) {
 
-        response.sendRedirect("login.jsp");
+        response.sendRedirect(
+                request.getContextPath()
+                + "/admin-login.jsp"
+        );
+
         return;
     }
 
-    String success = request.getParameter("success");
-    String error = request.getParameter("error");
+    String success =
+            request.getParameter("success");
+
+    String error =
+            request.getParameter("error");
 
     DecimalFormat priceFormat =
             new DecimalFormat("#,##0.00");
@@ -57,27 +62,26 @@
 
 <style>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Poppins, Arial, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Poppins,Arial,sans-serif;
 }
 
-body {
-
-    min-height: 100vh;
-    color: white;
+body{
+    min-height:100vh;
+    color:white;
 
     background:
         radial-gradient(
             circle at top left,
-            rgba(0, 255, 204, 0.16),
+            rgba(0,255,204,.16),
             transparent 30%
         ),
         radial-gradient(
             circle at bottom right,
-            rgba(0, 119, 255, 0.18),
+            rgba(0,119,255,.18),
             transparent 35%
         ),
         linear-gradient(
@@ -87,550 +91,431 @@ body {
             #243b55
         );
 
-    background-attachment: fixed;
+    background-attachment:fixed;
 }
 
-/* =========================
-   NAVBAR
-========================= */
+/* NAVBAR */
 
-.navbar {
+.navbar{
+    min-height:75px;
 
-    min-height: 75px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding:15px 40px;
 
-    padding: 15px 40px;
-
-    background: rgba(16, 31, 48, 0.98);
+    background:rgba(16,31,48,.98);
 
     border-bottom:
-        1px solid rgba(255, 255, 255, 0.15);
+        1px solid rgba(255,255,255,.15);
 
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position:sticky;
+    top:0;
+    z-index:100;
 }
 
-.logo {
+.logo{
+    font-size:29px;
+    font-weight:bold;
 
-    font-size: 29px;
-    font-weight: bold;
-
-    color: #00ffcc;
+    color:#00ffcc;
 
     text-shadow:
-        0 0 12px rgba(0, 255, 204, 0.35);
+        0 0 12px rgba(0,255,204,.35);
 }
 
-.nav-links {
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.nav-links{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
-.nav-links a {
+.nav-links a{
+    color:white;
+    text-decoration:none;
 
-    color: white;
+    padding:10px 16px;
 
-    text-decoration: none;
+    border-radius:22px;
 
-    padding: 10px 16px;
-
-    border-radius: 22px;
-
-    transition:
-        background 0.3s ease,
-        color 0.3s ease;
+    transition:.3s;
 }
 
-.nav-links a:hover {
-
-    color: #07111f;
-    background: #00ffcc;
+.nav-links a:hover{
+    color:#07111f;
+    background:#00ffcc;
 }
 
-/* =========================
-   CONTAINER
-========================= */
+/* CONTAINER */
 
-.container {
+.container{
+    width:92%;
+    max-width:1300px;
 
-    width: 92%;
-    max-width: 1300px;
-
-    margin: 40px auto;
+    margin:40px auto;
 }
 
-.heading {
+.heading{
+    text-align:center;
 
-    text-align: center;
+    font-size:40px;
 
-    font-size: 40px;
+    color:#00ffcc;
 
-    color: #00ffcc;
-
-    margin-bottom: 8px;
+    margin-bottom:8px;
 }
 
-.subtitle {
+.subtitle{
+    text-align:center;
 
-    text-align: center;
+    color:#cbd5e1;
 
-    color: #cbd5e1;
-
-    margin-bottom: 30px;
+    margin-bottom:30px;
 }
 
-/* =========================
-   TOP BAR
-========================= */
+/* TOP BAR */
 
-.top-bar {
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap:20px;
 
-    gap: 20px;
-
-    margin-bottom: 30px;
+    margin-bottom:30px;
 }
 
-.search-box {
-
-    flex: 1;
-    max-width: 600px;
+.search-box{
+    flex:1;
+    max-width:600px;
 }
 
-.search-box input {
+.search-box input{
+    width:100%;
 
-    width: 100%;
+    padding:15px 20px;
 
-    padding: 15px 20px;
+    border:2px solid transparent;
+    outline:none;
 
-    border: 2px solid transparent;
+    border-radius:30px;
 
-    outline: none;
-
-    border-radius: 30px;
-
-    font-size: 16px;
-
-    transition:
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
+    font-size:16px;
 }
 
-.search-box input:focus {
-
-    border-color: #00ffcc;
+.search-box input:focus{
+    border-color:#00ffcc;
 
     box-shadow:
-        0 0 0 4px rgba(0, 255, 204, 0.14);
+        0 0 0 4px rgba(0,255,204,.14);
 }
 
-.add-btn {
+.add-btn{
+    display:inline-block;
 
-    display: inline-block;
+    padding:15px 24px;
 
-    padding: 15px 24px;
+    color:#07111f;
 
-    color: #07111f;
+    background:#00ffcc;
 
-    background: #00ffcc;
+    text-decoration:none;
 
-    text-decoration: none;
+    border-radius:30px;
 
-    border-radius: 30px;
+    font-weight:bold;
 
-    font-weight: bold;
-
-    white-space: nowrap;
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    white-space:nowrap;
 }
 
-.add-btn:hover {
+/* MESSAGES */
 
-    transform: translateY(-2px);
+.message{
+    padding:15px;
 
-    box-shadow:
-        0 10px 25px rgba(0, 255, 204, 0.28);
+    margin-bottom:25px;
+
+    border-radius:15px;
+
+    text-align:center;
+
+    font-weight:bold;
 }
 
-/* =========================
-   MESSAGES
-========================= */
-
-.message {
-
-    padding: 15px;
-
-    margin-bottom: 25px;
-
-    border-radius: 15px;
-
-    text-align: center;
-
-    font-weight: bold;
+.success-message{
+    color:#05251e;
+    background:#00ffcc;
 }
 
-.success-message {
-
-    color: #05251e;
-
-    background: #00ffcc;
+.error-message{
+    color:white;
+    background:#ff4d5a;
 }
 
-.error-message {
+/* GRID */
 
-    color: white;
-
-    background: #ff4d5a;
-}
-
-/* =========================
-   VEHICLE GRID
-========================= */
-
-.vehicle-grid {
-
-    display: grid;
+.vehicle-grid{
+    display:grid;
 
     grid-template-columns:
-        repeat(auto-fit, minmax(310px, 1fr));
+        repeat(auto-fit,minmax(310px,1fr));
 
-    gap: 30px;
+    gap:30px;
 }
 
-.card {
+.card{
+    display:flex;
+    flex-direction:column;
 
-    display: flex;
-    flex-direction: column;
+    overflow:hidden;
 
-    overflow: hidden;
-
-    background: #1c2b3d;
+    background:#1c2b3d;
 
     border:
-        1px solid rgba(255, 255, 255, 0.15);
+        1px solid rgba(255,255,255,.15);
 
-    border-radius: 25px;
-
-    box-shadow:
-        0 15px 35px rgba(0, 0, 0, 0.35);
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-
-    transform: translateZ(0);
-    backface-visibility: hidden;
-}
-
-.card:hover {
-
-    transform: translateY(-6px);
+    border-radius:25px;
 
     box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.45);
+        0 15px 35px rgba(0,0,0,.35);
+
+    transition:.3s;
 }
 
-.image-box {
-
-    position: relative;
-
-    width: 100%;
-    height: 230px;
-
-    overflow: hidden;
-
-    background: #101827;
+.card:hover{
+    transform:translateY(-6px);
 }
 
-.image-box img {
+.image-box{
+    position:relative;
 
-    width: 100%;
-    height: 100%;
+    width:100%;
+    height:230px;
 
-    object-fit: cover;
+    overflow:hidden;
 
-    display: block;
-
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    background:#101827;
 }
 
-.category-tag {
+.image-box img{
+    width:100%;
+    height:100%;
 
-    position: absolute;
-
-    top: 15px;
-    right: 15px;
-
-    padding: 8px 14px;
-
-    color: #07111f;
-
-    background: #00ffcc;
-
-    border-radius: 20px;
-
-    font-size: 13px;
-    font-weight: bold;
+    object-fit:cover;
+    display:block;
 }
 
-.vehicle-id {
+.type-tag{
+    position:absolute;
 
-    position: absolute;
+    top:15px;
+    right:15px;
 
-    top: 15px;
-    left: 15px;
+    padding:8px 14px;
 
-    padding: 7px 12px;
+    color:#07111f;
 
-    color: white;
+    background:#00ffcc;
 
-    background: rgba(0, 0, 0, 0.65);
+    border-radius:20px;
 
-    border-radius: 20px;
-
-    font-size: 13px;
+    font-size:13px;
+    font-weight:bold;
 }
 
-.content {
+.vehicle-id{
+    position:absolute;
 
-    display: flex;
-    flex-direction: column;
+    top:15px;
+    left:15px;
 
-    flex: 1;
+    padding:7px 12px;
 
-    padding: 24px;
+    color:white;
+
+    background:rgba(0,0,0,.65);
+
+    border-radius:20px;
+
+    font-size:13px;
 }
 
-.content h2 {
+.content{
+    display:flex;
+    flex-direction:column;
 
-    color: #00ffcc;
+    flex:1;
 
-    margin-bottom: 15px;
-
-    font-size: 24px;
+    padding:24px;
 }
 
-.price {
+.content h2{
+    color:#00ffcc;
 
-    margin-bottom: 16px;
+    margin-bottom:15px;
 
-    color: white;
-
-    font-size: 20px;
-    font-weight: bold;
+    font-size:24px;
 }
 
-.price span {
+.price{
+    margin-bottom:16px;
 
-    color: #94a3b8;
+    color:white;
 
-    font-size: 14px;
-    font-weight: normal;
+    font-size:20px;
+    font-weight:bold;
 }
 
-.details-grid {
+.price span{
+    color:#94a3b8;
 
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 10px;
-
-    margin-bottom: 18px;
+    font-size:14px;
+    font-weight:normal;
 }
 
-.detail {
+.details-grid{
+    display:grid;
 
-    padding: 10px;
+    grid-template-columns:
+        1fr 1fr;
 
-    color: #e2e8f0;
+    gap:10px;
 
-    background: rgba(255, 255, 255, 0.08);
-
-    border-radius: 12px;
-
-    font-size: 14px;
+    margin-bottom:18px;
 }
 
-.description {
+.detail{
+    padding:10px;
 
-    color: #cbd5e1;
+    color:#e2e8f0;
 
-    line-height: 1.6;
+    background:
+        rgba(255,255,255,.08);
 
-    margin-bottom: 20px;
+    border-radius:12px;
 
-    display: -webkit-box;
-
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
+    font-size:14px;
 }
 
-.button-row {
+.status{
+    margin-bottom:20px;
 
-    display: flex;
+    font-weight:bold;
 
-    gap: 12px;
-
-    margin-top: auto;
+    color:#00ffcc;
 }
 
-.btn {
+.button-row{
+    display:flex;
 
-    flex: 1;
+    gap:12px;
 
-    display: inline-block;
-
-    padding: 12px 18px;
-
-    border: none;
-
-    border-radius: 25px;
-
-    text-align: center;
-
-    text-decoration: none;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.3s ease,
-        filter 0.3s ease;
+    margin-top:auto;
 }
 
-.edit {
+.btn{
+    flex:1;
 
-    color: #07111f;
+    display:inline-block;
 
-    background: #00ffcc;
+    padding:12px 18px;
+
+    border:none;
+
+    border-radius:25px;
+
+    text-align:center;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    cursor:pointer;
 }
 
-.delete {
-
-    color: white;
-
-    background: #ff4d5a;
+.edit{
+    color:#07111f;
+    background:#00ffcc;
 }
 
-.btn:hover {
-
-    transform: translateY(-2px);
-
-    filter: brightness(1.06);
+.delete{
+    color:white;
+    background:#ff4d5a;
 }
 
-/* =========================
-   EMPTY BOX
-========================= */
+.empty-box{
+    grid-column:1/-1;
 
-.empty-box {
+    padding:50px 20px;
 
-    grid-column: 1 / -1;
+    text-align:center;
 
-    padding: 50px 20px;
+    background:#1c2b3d;
 
-    text-align: center;
-
-    background: #1c2b3d;
-
-    border:
-        1px solid rgba(255, 255, 255, 0.15);
-
-    border-radius: 25px;
+    border-radius:25px;
 }
 
-.empty-box h2 {
+.empty-box h2{
+    color:#00ffcc;
 
-    color: #00ffcc;
-
-    margin-bottom: 12px;
+    margin-bottom:12px;
 }
 
-.empty-box p {
-
-    color: #cbd5e1;
+.empty-box p{
+    color:#cbd5e1;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* MOBILE */
 
-@media (max-width: 800px) {
+@media(max-width:800px){
 
-    .navbar {
+    .navbar{
+        padding:15px 20px;
 
-        padding: 15px 20px;
+        flex-direction:column;
 
-        flex-direction: column;
-
-        gap: 14px;
+        gap:14px;
     }
 
-    .nav-links {
+    .nav-links{
+        flex-wrap:wrap;
 
-        flex-wrap: wrap;
-
-        justify-content: center;
+        justify-content:center;
     }
 
-    .logo {
+    .container{
+        width:94%;
 
-        font-size: 24px;
+        margin-top:25px;
     }
 
-    .container {
-
-        width: 94%;
-
-        margin-top: 25px;
+    .heading{
+        font-size:30px;
     }
 
-    .heading {
-
-        font-size: 30px;
-    }
-
-    .top-bar {
-
-        flex-direction: column;
+    .top-bar{
+        flex-direction:column;
     }
 
     .search-box,
-    .add-btn {
+    .add-btn{
+        width:100%;
+        max-width:none;
 
-        width: 100%;
-        max-width: none;
-
-        text-align: center;
+        text-align:center;
     }
 
-    .vehicle-grid {
-
-        grid-template-columns: 1fr;
+    .vehicle-grid{
+        grid-template-columns:1fr;
     }
 }
 
 </style>
 
+<link rel="stylesheet"
+href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 
-<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/vehicle-theme.css">
 </head>
 
 <body>
@@ -643,19 +528,19 @@ body {
 
     <div class="nav-links">
 
-        <a href="admin-dashboard.jsp">
+        <a href="<%= request.getContextPath() %>/admin-dashboard.jsp">
             Dashboard
         </a>
 
-        <a href="manage-vehicles.jsp">
+        <a href="<%= request.getContextPath() %>/manage-vehicles.jsp">
             Vehicles
         </a>
 
-        <a href="add-vehicle.jsp">
+        <a href="<%= request.getContextPath() %>/add-vehicle.jsp">
             Add Vehicle
         </a>
 
-        <a href="LogoutServlet">
+        <a href="<%= request.getContextPath() %>/LogoutServlet">
             Logout
         </a>
 
@@ -663,345 +548,395 @@ body {
 
 </div>
 
+
 <div class="container">
 
-    <h1 class="heading">
-        🚘 Manage Vehicles
-    </h1>
+<h1 class="heading">
+    🚘 Manage Vehicles
+</h1>
 
-    <p class="subtitle">
-        View, edit and delete all available vehicles.
-    </p>
+<p class="subtitle">
+    View, edit and delete all available vehicles.
+</p>
 
-    <% if ("added".equals(success)) { %>
 
-        <div class="message success-message">
-            Vehicle successfully added ✅
-        </div>
+<%
+if ("added".equals(success)) {
+%>
 
-    <% } %>
+<div class="message success-message">
+    Vehicle successfully added ✅
+</div>
 
-    <% if ("deleted".equals(success)) { %>
+<%
+}
+%>
 
-        <div class="message success-message">
-            Vehicle successfully deleted ✅
-        </div>
 
-    <% } %>
+<%
+if ("deleted".equals(success)) {
+%>
 
-    <% if ("updated".equals(success)) { %>
+<div class="message success-message">
+    Vehicle successfully deleted ✅
+</div>
 
-        <div class="message success-message">
-            Vehicle successfully updated ✅
-        </div>
+<%
+}
+%>
 
-    <% } %>
 
-    <% if ("deleteFailed".equals(error)) { %>
+<%
+if ("updated".equals(success)) {
+%>
 
-        <div class="message error-message">
-            Vehicle delete nahi hua ❌
-        </div>
+<div class="message success-message">
+    Vehicle successfully updated ✅
+</div>
 
-    <% } %>
+<%
+}
+%>
 
-    <div class="top-bar">
 
-        <div class="search-box">
+<%
+if ("deleteFailed".equals(error)) {
+%>
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search vehicle by name, category or fuel..."
-                onkeyup="searchVehicles()">
+<div class="message error-message">
+    Vehicle delete nahi hua ❌
+</div>
 
-        </div>
+<%
+}
+%>
 
-        <a href="add-vehicle.jsp"
-           class="add-btn">
 
-            ➕ Add New Vehicle
+<div class="top-bar">
 
-        </a>
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search vehicle..."
+            onkeyup="searchVehicles()">
 
     </div>
 
-    <div class="vehicle-grid"
-         id="vehicleGrid">
+    <a
+        href="<%= request.getContextPath() %>/add-vehicle.jsp"
+        class="add-btn">
+
+        ➕ Add New Vehicle
+
+    </a>
+
+</div>
+
+
+<div class="vehicle-grid"
+     id="vehicleGrid">
 
 <%
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
 
-    boolean vehicleFound = false;
+Connection con = null;
+PreparedStatement ps = null;
+ResultSet rs = null;
 
-    try {
+boolean vehicleFound = false;
 
-        con = DBConnection.getConnection();
+try {
 
-        String sql =
-                "SELECT id, car_name, image, price, "
-                + "engine, power, speed, fuel, seats, "
-                + "transmission, category, description "
-                + "FROM vehicles "
-                + "ORDER BY id DESC";
+    con =
+        DBConnection.getConnection();
 
-        ps = con.prepareStatement(sql);
+    String sql =
+        "SELECT id, name, brand, type, "
+        + "price, image, status "
+        + "FROM vehicles "
+        + "ORDER BY id DESC";
 
-        rs = ps.executeQuery();
+    ps =
+        con.prepareStatement(sql);
 
-        while (rs.next()) {
+    rs =
+        ps.executeQuery();
 
-            vehicleFound = true;
+    while(rs.next()) {
 
-            int vehicleId =
-                    rs.getInt("id");
+        vehicleFound = true;
 
-            String carName =
-                    rs.getString("car_name");
+        int vehicleId =
+            rs.getInt("id");
 
-            String image =
-                    VehicleImageUtil.getImage(carName);
+        String carName =
+            rs.getString("name");
 
-            double price =
-                    rs.getDouble("price");
+        String brand =
+            rs.getString("brand");
 
-            String engine =
-                    rs.getString("engine");
+        String type =
+            rs.getString("type");
 
-            String power =
-                    rs.getString("power");
+        double price =
+            rs.getDouble("price");
 
-            String speed =
-                    rs.getString("speed");
+        String image =
+            rs.getString("image");
 
-            String fuel =
-                    rs.getString("fuel");
+        String status =
+            rs.getString("status");
 
-            int seats =
-                    rs.getInt("seats");
 
-            String transmission =
-                    rs.getString("transmission");
+        if(image == null
+                || image.trim().isEmpty()) {
 
-            String category =
-                    rs.getString("category");
-
-            String description =
-                    rs.getString("description");
-
-            String imagePath =
-                    request.getContextPath()
-                    + "/"
-                    + image;
-%>
-
-        <div class="card vehicle-card"
-             data-name="<%= safeText(carName).toLowerCase() %>"
-             data-category="<%= safeText(category).toLowerCase() %>"
-             data-fuel="<%= safeText(fuel).toLowerCase() %>">
-
-            <div class="image-box">
-
-                <img
-                    src="<%= imagePath %>"
-                    alt="<%= safeText(carName) %>"
-                    onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/images/cars/bugatti.jpg';">
-
-                <span class="vehicle-id">
-                    ID: <%= vehicleId %>
-                </span>
-
-                <span class="category-tag">
-                    <%= safeText(category) %>
-                </span>
-
-            </div>
-
-            <div class="content">
-
-                <h2>
-                    <%= safeText(carName) %>
-                </h2>
-
-                <p class="price">
-
-                    ₹<%= priceFormat.format(price) %>
-
-                    <span>
-                        / Day
-                    </span>
-
-                </p>
-
-                <div class="details-grid">
-
-                    <div class="detail">
-                        ⚙ Engine:
-                        <%= safeText(engine) %>
-                    </div>
-
-                    <div class="detail">
-                        ⚡ Power:
-                        <%= safeText(power) %>
-                    </div>
-
-                    <div class="detail">
-                        🏁 Speed:
-                        <%= safeText(speed) %>
-                    </div>
-
-                    <div class="detail">
-                        ⛽ Fuel:
-                        <%= safeText(fuel) %>
-                    </div>
-
-                    <div class="detail">
-                        💺 Seats:
-                        <%= seats %>
-                    </div>
-
-                    <div class="detail">
-                        🔄
-                        <%= safeText(transmission) %>
-                    </div>
-
-                </div>
-
-                <p class="description">
-                    <%= safeText(description) %>
-                </p>
-
-                <div class="button-row">
-
-                    <a
-                        href="edit-vehicle.jsp?id=<%= vehicleId %>"
-                        class="btn edit">
-
-                        ✏ Edit
-
-                    </a>
-
-                    <a
-                        href="<%= request.getContextPath() %>/DeleteVehicleServlet?id=<%= vehicleId %>"
-                        class="btn delete"
-                        onclick="return confirmDelete('<%= safeText(carName) %>');">
-
-                        🗑 Delete
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-<%
+            image =
+                VehicleImageUtil.getImage(
+                    carName
+                );
         }
 
-        if (!vehicleFound) {
+
+        String imagePath =
+            request.getContextPath()
+            + "/"
+            + image;
+
 %>
 
-        <div class="empty-box">
 
-            <h2>
-                Koi vehicle available nahi hai
-            </h2>
+<div
+    class="card vehicle-card"
+    data-name="<%= safeText(carName).toLowerCase() %>"
+    data-brand="<%= safeText(brand).toLowerCase() %>"
+    data-type="<%= safeText(type).toLowerCase() %>">
 
-            <p>
-                Add New Vehicle button se pehli vehicle add karo.
-            </p>
 
-        </div>
+<div class="image-box">
 
-<%
-        }
+    <img
+        src="<%= imagePath %>"
+        alt="<%= safeText(carName) %>"
+        onerror="this.onerror=null;
+        this.src='<%= request.getContextPath() %>/images/cars/bugatti.jpg';">
 
-    } catch (Exception e) {
+    <span class="vehicle-id">
+        ID: <%= vehicleId %>
+    </span>
 
-        e.printStackTrace();
-%>
+    <span class="type-tag">
+        <%= safeText(type) %>
+    </span>
 
-        <div class="empty-box">
+</div>
 
-            <h2>
-                Database Error
-            </h2>
 
-            <p>
-                Vehicles load nahi ho paayi. Console me error check karo.
-            </p>
+<div class="content">
 
-        </div>
+<h2>
+    <%= safeText(carName) %>
+</h2>
 
-<%
-    } finally {
 
-        try {
+<p class="price">
 
-            if (rs != null) {
-                rs.close();
-            }
+    ₹<%= priceFormat.format(price) %>
 
-            if (ps != null) {
-                ps.close();
-            }
+    <span>
+        / Day
+    </span>
 
-        } catch (Exception e) {
+</p>
 
-            e.printStackTrace();
-        }
-    }
-%>
 
+<div class="details-grid">
+
+    <div class="detail">
+        🏷 Brand:
+        <%= safeText(brand) %>
+    </div>
+
+    <div class="detail">
+        🚘 Type:
+        <%= safeText(type) %>
     </div>
 
 </div>
 
+
+<p class="status">
+
+    ●
+    <%= safeText(status) %>
+
+</p>
+
+
+<div class="button-row">
+
+    <a
+        href="<%= request.getContextPath() %>/edit-vehicle.jsp?id=<%= vehicleId %>"
+        class="btn edit">
+
+        ✏ Edit
+
+    </a>
+
+    <a
+        href="<%= request.getContextPath() %>/DeleteVehicleServlet?id=<%= vehicleId %>"
+        class="btn delete"
+        onclick="return confirmDelete('<%= safeText(carName) %>');">
+
+        🗑 Delete
+
+    </a>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<%
+
+    }
+
+
+    if(!vehicleFound) {
+
+%>
+
+
+<div class="empty-box">
+
+    <h2>
+        Koi vehicle available nahi hai
+    </h2>
+
+    <p>
+        Add New Vehicle button se pehla vehicle add karo.
+    </p>
+
+</div>
+
+
+<%
+
+    }
+
+} catch(Exception e) {
+
+    e.printStackTrace();
+
+%>
+
+
+<div class="empty-box">
+
+    <h2>
+        Database Error
+    </h2>
+
+    <p>
+        Vehicles load nahi ho paayi.
+    </p>
+
+</div>
+
+
+<%
+
+} finally {
+
+    try {
+
+        if(rs != null) {
+            rs.close();
+        }
+
+        if(ps != null) {
+            ps.close();
+        }
+
+    } catch(Exception e) {
+
+        e.printStackTrace();
+    }
+}
+
+%>
+
+</div>
+
+</div>
+
+
 <script>
 
-function searchVehicles() {
+function searchVehicles(){
 
     const searchValue =
         document
-        .getElementById("searchInput")
+        .getElementById(
+            "searchInput"
+        )
         .value
         .toLowerCase()
         .trim();
 
+
     const cards =
-        document.querySelectorAll(".vehicle-card");
+        document
+        .querySelectorAll(
+            ".vehicle-card"
+        );
 
-    cards.forEach(function(card) {
 
-        const name =
-            card.getAttribute("data-name") || "";
+    cards.forEach(
+        function(card){
 
-        const category =
-            card.getAttribute("data-category") || "";
+            const name =
+                card.getAttribute(
+                    "data-name"
+                ) || "";
 
-        const fuel =
-            card.getAttribute("data-fuel") || "";
+            const brand =
+                card.getAttribute(
+                    "data-brand"
+                ) || "";
 
-        const matched =
-            name.includes(searchValue)
-            || category.includes(searchValue)
-            || fuel.includes(searchValue);
+            const type =
+                card.getAttribute(
+                    "data-type"
+                ) || "";
 
-        if (matched) {
 
-            card.style.display = "flex";
+            const matched =
+                name.includes(
+                    searchValue
+                )
+                || brand.includes(
+                    searchValue
+                )
+                || type.includes(
+                    searchValue
+                );
 
-        } else {
 
-            card.style.display = "none";
+            card.style.display =
+                matched
+                ? "flex"
+                : "none";
         }
-    });
+    );
 }
 
-function confirmDelete(vehicleName) {
+
+function confirmDelete(vehicleName){
 
     return confirm(
         "Kya aap "
